@@ -155,8 +155,12 @@ use phf_generator::HashState;
 use phf_generator::ptrhash::HashState;
 
 mod bi_map;
+#[cfg(feature = "strhash")]
+mod str_map;
 
 pub use bi_map::{BiMap, DisplayBiMap};
+#[cfg(feature = "strhash")]
+pub use str_map::{DisplayStrMap, DisplayStrSet, StrMap, StrSet};
 
 struct Delegate<T>(T);
 

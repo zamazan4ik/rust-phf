@@ -13,6 +13,62 @@ fn main() -> io::Result<()> {
 
     writeln!(
         &mut file,
+        "static STR_MAP: ::phf::StrMap<u32> = \n{};",
+        phf_codegen::StrMap::new()
+            .entry("GET", "0")
+            .entry("POST", "1")
+            .entry("with \"quotes\" and \\ and \n", "2")
+            .entry("", "3")
+            .build()
+    )?;
+
+    writeln!(
+        &mut file,
+        "static STR_SET: ::phf::StrSet = \n{};",
+        ["http", "https", "ftp", "ws", "wss", "file"]
+            .into_iter()
+            .collect::<phf_codegen::StrSet>()
+            .build()
+    )?;
+
+    writeln!(
+        &mut file,
+        "static EMPTY_STR_SET: ::phf::StrSet = \n{};",
+        phf_codegen::StrSet::new().build()
+    )?;
+
+    // Large enough for the wide tier, with some long keys.
+    let wide_keys: Vec<String> = (0..5000)
+        .map(|i| {
+            if i % 100 == 0 {
+                format!("a/rather/long/path/segment/number/{i}")
+            } else {
+                format!("k{i}")
+            }
+        })
+        .collect();
+    writeln!(
+        &mut file,
+        "static WIDE_STR_MAP: ::phf::StrMap<u32> = \n{};",
+        wide_keys
+            .iter()
+            .enumerate()
+            .map(|(i, k)| (k.as_str(), i.to_string()))
+            .collect::<phf_codegen::StrMap>()
+            .build()
+    )?;
+
+    let mut quoted_str_map = phf_codegen::StrMap::new();
+    quoted_str_map.entry("a", "1").entry("b", "2");
+    let quoted_str_map = quoted_str_map.build();
+    writeln!(
+        &mut file,
+        "{}",
+        quote!(static QUOTED_STR_MAP: ::phf::StrMap<u32> = #quoted_str_map;)
+    )?;
+
+    writeln!(
+        &mut file,
         "static SINGLETON_MAP: ::phf::Map<&'static str, u32> = \n{};",
         phf_codegen::Map::new().entry("a", "1").build()
     )?;

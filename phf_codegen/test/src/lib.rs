@@ -290,4 +290,37 @@ mod test {
             &QUOTED_ORDERED_SET.iter().cloned().collect::<Vec<_>>()[..]
         );
     }
+
+    #[test]
+    fn str_map() {
+        assert_eq!(STR_MAP.get("GET"), Some(&0));
+        assert_eq!(STR_MAP.get("POST"), Some(&1));
+        assert_eq!(STR_MAP.get("with \"quotes\" and \\ and \n"), Some(&2));
+        assert_eq!(STR_MAP.get(""), Some(&3));
+        assert_eq!(STR_MAP.get("PUT"), None);
+        assert_eq!(STR_MAP.keys().next(), Some("GET"));
+        assert_eq!(QUOTED_STR_MAP.get("b"), Some(&2));
+    }
+
+    #[test]
+    fn str_set() {
+        for key in ["http", "https", "ftp", "ws", "wss", "file"] {
+            assert!(STR_SET.contains(key));
+        }
+        assert!(!STR_SET.contains("gopher"));
+        assert!(!STR_SET.contains("http\0"));
+        assert!(EMPTY_STR_SET.is_empty());
+        assert!(!EMPTY_STR_SET.contains(""));
+    }
+
+    #[test]
+    fn wide_str_map() {
+        assert_eq!(WIDE_STR_MAP.len(), 5000);
+        for (i, (key, value)) in WIDE_STR_MAP.entries().enumerate() {
+            assert_eq!(*value as usize, i);
+            assert_eq!(WIDE_STR_MAP.get(key), Some(value));
+            assert_eq!(WIDE_STR_MAP.get(&format!("{key}x")), None);
+        }
+        assert_eq!(WIDE_STR_MAP.get("k5000"), None);
+    }
 }
