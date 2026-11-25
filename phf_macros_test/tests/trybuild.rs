@@ -22,3 +22,10 @@ fn compile_fail() {
     let t = trybuild::TestCases::new();
     t.compile_fail("tests/compile-fail/*.rs");
 }
+
+#[test]
+#[ignore]
+fn compile_fail_strhash() {
+    let t = trybuild::TestCases::new();
+    t.compile_fail("tests/compile-fail-strhash/*.rs");
+}

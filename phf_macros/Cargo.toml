@@ -17,6 +17,7 @@ proc-macro = true
 unicase = ["unicase_", "phf_shared/unicase"]
 uncased = ["uncased_", "phf_shared/uncased"]
 ptrhash = ["phf_generator/ptrhash"]
+strhash = ["phf_generator/strhash", "phf_shared/strhash"]
 
 [dependencies]
 syn = { version = "3", features = ["full"] }

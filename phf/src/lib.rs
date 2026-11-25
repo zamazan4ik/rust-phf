@@ -259,6 +259,49 @@ pub use phf_macros::phf_set;
 /// Requires the `macros` feature. Same usage as [`phf_set`].
 pub use phf_macros::phf_ordered_set;
 
+#[cfg(all(feature = "macros", feature = "strhash"))]
+/// Macro to create a `static` (compile-time) [`StrMap`].
+///
+/// Requires the `macros` and `strhash` features. Keys must be string
+/// literals; otherwise usage is as for [`phf_map`], including OR patterns and
+/// `#[cfg]` attributes on entries.
+///
+/// # Example
+///
+/// ```
+/// use phf::{phf_str_map, StrMap};
+///
+/// #[derive(Debug, PartialEq)]
+/// enum Method { Get, Post, Put }
+///
+/// static METHODS: StrMap<Method> = phf_str_map! {
+///     "GET" => Method::Get,
+///     "POST" => Method::Post,
+///     "PUT" | "put" => Method::Put,
+/// };
+///
+/// assert_eq!(METHODS.get("POST"), Some(&Method::Post));
+/// assert_eq!(METHODS.get("put"), Some(&Method::Put));
+/// assert_eq!(METHODS.get("DELETE"), None);
+/// ```
+pub use phf_macros::phf_str_map;
+
+#[cfg(all(feature = "macros", feature = "strhash"))]
+/// Macro to create a `static` (compile-time) [`StrSet`].
+///
+/// Requires the `macros` and `strhash` features. Same usage as
+/// [`phf_str_map`].
+///
+/// ```
+/// use phf::{phf_str_set, StrSet};
+///
+/// static PROTOCOLS: StrSet = phf_str_set! { "http", "https", "ftp", "ws", "wss", "file" };
+///
+/// assert!(PROTOCOLS.contains("https"));
+/// assert!(!PROTOCOLS.contains("gopher"));
+/// ```
+pub use phf_macros::phf_str_set;
+
 // `__resolve_cfg` re-enters the proc macro after filtering `#[cfg]`
 // attributes. This supports both `phf::phf_map!` re-exports and direct
 // `phf_macros::phf_map!` users where `phf/macros` is not enabled.
@@ -338,6 +381,15 @@ pub use self::ordered_map::OrderedMap;
 pub use self::ordered_set::OrderedSet;
 #[doc(inline)]
 pub use self::set::Set;
+#[cfg(feature = "strhash")]
+#[doc(inline)]
+pub use self::str_map::StrMap;
+#[cfg(feature = "strhash")]
+#[doc(inline)]
+pub use self::str_set::StrSet;
+#[cfg(feature = "strhash")]
+#[doc(hidden)]
+pub use phf_shared::strhash::{SlotKey, StrHash};
 pub use phf_shared::{PhfEq, PhfHash};
 
 pub mod bi_map;
@@ -346,3 +398,7 @@ pub mod map;
 pub mod ordered_map;
 pub mod ordered_set;
 pub mod set;
+#[cfg(feature = "strhash")]
+pub mod str_map;
+#[cfg(feature = "strhash")]
+pub mod str_set;

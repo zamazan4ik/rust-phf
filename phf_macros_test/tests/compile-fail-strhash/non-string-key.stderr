@@ -1,0 +1,11 @@
+error: expected a string literal key
+ --> tests/compile-fail-strhash/non-string-key.rs:5:5
+  |
+5 |     b"b" => 2,
+  |     ^^^^
+
+error: expected a string literal key
+ --> tests/compile-fail-strhash/non-string-key.rs:8:37
+  |
+8 | static SET: StrSet = phf_str_set! { 1u32 };
+  |                                     ^^^^

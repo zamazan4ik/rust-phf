@@ -586,3 +586,66 @@ pub fn phf_ordered_set(input: TokenStream) -> TokenStream {
         quote!(phf::OrderedSet { map: #map })
     })
 }
+
+// Keys of a `phf_str_map!` must be string literals: the generated hash reads
+// their bytes.
+#[cfg(feature = "strhash")]
+fn build_str_map(entries: &[(Expr, Expr)]) -> syn::Result<proc_macro2::TokenStream> {
+    use phf_generator::strhash::{StrHashError, Tier, try_generate_str_hash};
+
+    let mut keys = Vec::with_capacity(entries.len());
+    for (key, _) in entries {
+        match ungroup(key) {
+            Expr::Lit(ExprLit {
+                lit: Lit::Str(s), ..
+            }) => keys.push(s.value()),
+            other => return Err(Error::new_spanned(other, "expected a string literal key")),
+        }
+    }
+    let state = try_generate_str_hash(&keys, Tier::Auto).map_err(|e| match e {
+        StrHashError::DuplicateKey(i) => Error::new_spanned(&entries[i].0, "duplicate key"),
+        e => Error::new(proc_macro2::Span::call_site(), e),
+    })?;
+    let fields: proc_macro2::TokenStream = state
+        .fields_source("phf", &keys)
+        .parse()
+        .expect("strhash generated invalid tokens");
+    let entries = entries.iter().map(entry_tokens);
+    Ok(quote!(phf::StrMap { #fields entries: &[#(#entries),*] }))
+}
+
+#[cfg(feature = "strhash")]
+fn emit_str_code(
+    macro_name: impl ToTokens,
+    entries: Punctuated<impl AsMapEntry + ToTokens, Token![,]>,
+    wrap: fn(proc_macro2::TokenStream) -> proc_macro2::TokenStream,
+) -> TokenStream {
+    resolve_cfg(macro_name, entries, |input| {
+        let mut entries = Vec::with_capacity(input.len());
+        for entry in input {
+            let (key, value) = entry.into_pair();
+            for key in expand_or_patterns(&key) {
+                entries.push((key, value.clone()));
+            }
+        }
+        build_str_map(&entries).map(wrap)
+    })
+}
+
+#[cfg(feature = "strhash")]
+#[proc_macro]
+pub fn phf_str_map(input: TokenStream) -> TokenStream {
+    let map = parse_macro_input!(input as parse::Map);
+    emit_str_code(quote! { phf_str_map }, map.entries, |map| map)
+}
+
+#[cfg(feature = "strhash")]
+#[proc_macro]
+pub fn phf_str_set(input: TokenStream) -> TokenStream {
+    let set = parse_macro_input!(input as parse::Set);
+    emit_str_code(
+        quote! { phf_str_set },
+        set.keys,
+        |map| quote!(phf::StrSet { map: #map }),
+    )
+}

@@ -12,6 +12,7 @@ categories = ["data-structures"]
 
 [features]
 ptrhash = ["phf_generator/ptrhash"]
+strhash = ["phf_generator/strhash", "phf_shared/strhash"]
 quote = ["dep:proc-macro2", "dep:quote"]
 
 [dependencies]

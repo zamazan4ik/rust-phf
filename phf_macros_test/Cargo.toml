@@ -14,8 +14,8 @@ publish = false
 
 [dev-dependencies]
 trybuild = "1.0"
-phf = { path = "../phf", features = ["macros", "serde"] }
-phf_macros = { path = "../phf_macros", features = ["unicase", "uncased"] }
+phf = { path = "../phf", features = ["macros", "serde", "strhash"] }
+phf_macros = { path = "../phf_macros", features = ["unicase", "uncased", "strhash"] }
 serde_json = "1.0"
 unicase = "2.8.1"
 uncased = "0.9.7"
