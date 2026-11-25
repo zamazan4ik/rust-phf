@@ -45,8 +45,18 @@ fn main() {
             map.entry(key.as_str(), i.to_string());
             str_map.entry(key.as_str(), i.to_string());
         }
-        writeln!(out, "static {upper}_MAP: ::phf::Map<&'static str, u32> = {};", map.build()).unwrap();
-        writeln!(out, "static {upper}_STR_MAP: ::phf::StrMap<u32> = {};", str_map.build()).unwrap();
+        writeln!(
+            out,
+            "static {upper}_MAP: ::phf::Map<&'static str, u32> = {};",
+            map.build()
+        )
+        .unwrap();
+        writeln!(
+            out,
+            "static {upper}_STR_MAP: ::phf::StrMap<u32> = {};",
+            str_map.build()
+        )
+        .unwrap();
         writeln!(out, "static {upper}_HITS: &[&str] = &{hits:?};").unwrap();
         writeln!(out, "static {upper}_MISSES: &[&str] = &{misses:?};").unwrap();
         writeln!(
