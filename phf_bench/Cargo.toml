@@ -1,0 +1,25 @@
+[package]
+name = "phf_bench"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.85"
+publish = false
+description = "Lookup benchmarks comparing phf::Map, phf::StrMap and std::collections::HashMap"
+build = "build.rs"
+
+[features]
+ptrhash = ["phf/ptrhash", "phf_codegen/ptrhash"]
+
+[dependencies]
+phf = { version = "^0.14.0", features = ["strhash"] }
+
+[build-dependencies]
+phf_codegen = { version = "^0.14.0", path = "../phf_codegen", features = ["strhash"] }
+
+[dev-dependencies]
+criterion = "0.8.0"
+fastrand = "2.1.0"
+
+[[bench]]
+name = "lookup"
+harness = false

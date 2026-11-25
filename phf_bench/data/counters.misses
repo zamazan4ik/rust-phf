@@ -1,0 +1,10 @@
+records_validated
+total_bytes
+processed_bytes
+failed_requests
+invalid_records
+total_records
+matched_records
+written_records
+ok_count
+error_count

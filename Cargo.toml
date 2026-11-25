@@ -2,6 +2,7 @@
 resolver = "1"
 members = [
     "phf",
+    "phf_bench",
     "phf/examples/unicase-example",
     "phf/examples/uncased-example",
     "phf_codegen",

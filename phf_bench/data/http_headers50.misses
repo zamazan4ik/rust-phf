@@ -1,0 +1,10 @@
+X-Request-Id
+Forwarded
+Alt-Svc
+DNT
+Upgrade-Insecure-Requests
+X-Frame-Options
+Content-Security-Policy
+Strict-Transport-Security
+Access-Control-Allow-Origin
+Content-MD5

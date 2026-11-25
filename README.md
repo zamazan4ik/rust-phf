@@ -13,6 +13,10 @@ also ships an experimental `ptrhash` feature for an alternative PHF layout.
 This layout keeps spare slots (about 1% for large tables) to avoid remapping
 lookups. Iteration skips these slots, so each entry is returned exactly once.
 
+For string keys, the opt-in `strhash` feature adds `StrMap` and `StrSet`,
+whose hash is chosen for the key set at build time (see
+[String-keyed maps](#string-keyed-maps-strhash)).
+
 MSRV (minimum supported rust version) is Rust 1.85.
 
 ## Usage
@@ -191,4 +195,52 @@ pub fn parse_keyword(keyword: &str) -> Option<Keyword> {
 pub fn parse_operator(operator: &str) -> Option<&'static str> {
     OPERATORS.get(operator).copied()
 }
+```
+
+## String-keyed maps (`strhash`)
+
+`phf::Map` hashes every key type with the same keyed hash. When all keys are
+strings, the `strhash` feature offers `phf::StrMap` and `phf::StrSet`, which
+pick a hash specialised to the key set instead:
+
+- up to 255 keys shorter than 255 bytes: a gperf-style hash that reads only
+  the few byte positions that tell the keys apart, falling back to
+  hash-and-displace or a seeded whole-key hash, in a table of at most 256 slots;
+- larger sets or longer keys: a multiplicative hash of the key's 64-bit words
+  with a pilot per bucket.
+
+Keys of up to 16 bytes are then compared with two 8-byte loads. Lookups never
+read past the end of the key, and the tables are the same on every target.
+Iteration follows declaration order. The algorithms are ported from
+[ConstexprCore/perfect_hash](https://github.com/ConstexprCore/perfect_hash)
+(MIT).
+
+```toml
+[dependencies]
+phf = { version = "0.14.0", features = ["macros", "strhash"] }
+```
+
+```rust
+use phf::{StrMap, StrSet, phf_str_map, phf_str_set};
+
+static METHODS: StrMap<u8> = phf_str_map! {
+    "GET" => 0,
+    "POST" => 1,
+    "PUT" | "put" => 2,
+};
+
+static PROTOCOLS: StrSet = phf_str_set! { "http", "https", "ftp" };
+
+assert_eq!(METHODS.get("POST"), Some(&1));
+assert!(PROTOCOLS.contains("https"));
+```
+
+Keys must be string literals. `phf_codegen::StrMap` and `phf_codegen::StrSet`
+(with the `strhash` feature of `phf_codegen`) generate the same types from a
+build script. The `phf_bench` crate compares lookups against `phf::Map` and
+`std::collections::HashMap`:
+
+```sh
+cargo bench -p phf_bench
+cargo bench -p phf_bench --features ptrhash
 ```

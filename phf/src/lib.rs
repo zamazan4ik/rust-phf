@@ -33,6 +33,20 @@
 //! phf = { version = "0.14.0", features = ["macros", "ptrhash"] }
 //! ```
 //!
+//! For string keys, the `strhash` feature adds `StrMap` and `StrSet` (and
+//! the `phf_str_map!` and `phf_str_set!` macros). Their hash is chosen for the
+//! key set when it is generated: small sets read only the few bytes that tell
+//! their keys apart, and larger ones use a multiplicative hash of the whole
+//! key. The feature is additive and does not change [`Map`] or [`Set`]. The
+//! algorithms are ported from
+//! [ConstexprCore/perfect_hash](https://github.com/ConstexprCore/perfect_hash)
+//! (MIT).
+//!
+//! ```toml
+//! [dependencies]
+//! phf = { version = "0.14.0", features = ["macros", "strhash"] }
+//! ```
+//!
 //! To compile the `phf` crate with a dependency on
 //! libcore instead of libstd, enabling use in environments where libstd
 //! will not work, set `default-features = false` for the dependency:

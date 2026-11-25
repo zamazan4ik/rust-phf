@@ -1,0 +1,10 @@
+text/xml
+text/csv
+application/gzip
+application/wasm
+image/avif
+image/tiff
+audio/ogg
+video/webm
+font/otf
+application/x-www-form-urlencoded

@@ -344,6 +344,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "phf_bench"
+version = "0.0.0"
+dependencies = [
+ "criterion",
+ "fastrand",
+ "phf",
+ "phf_codegen",
+]
+
+[[package]]
 name = "phf_codegen"
 version = "0.14.0"
 dependencies = [
