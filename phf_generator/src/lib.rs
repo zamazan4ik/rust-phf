@@ -17,6 +17,9 @@ const FIXED_SEED: u64 = 1234567890;
 #[cfg(feature = "ptrhash")]
 pub mod ptrhash;
 
+#[cfg(feature = "strhash")]
+pub mod strhash;
+
 pub struct HashState {
     pub key: HashKey,
     pub disps: Vec<(u32, u32)>,

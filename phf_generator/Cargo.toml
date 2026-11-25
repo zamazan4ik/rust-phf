@@ -12,6 +12,7 @@ readme = "README.md"
 
 [features]
 ptrhash = ["phf_shared/ptrhash"]
+strhash = ["phf_shared/strhash"]
 
 [dependencies]
 fastrand = { version = "2.1.0", default-features = false }

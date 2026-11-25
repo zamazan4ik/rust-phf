@@ -18,6 +18,9 @@ use hasher::PortableHasher;
 #[cfg(feature = "ptrhash")]
 pub mod ptrhash;
 
+#[cfg(feature = "strhash")]
+pub mod strhash;
+
 #[non_exhaustive]
 pub struct Hashes {
     pub g: u32,
